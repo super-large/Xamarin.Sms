@@ -1,0 +1,6 @@
+<resources>
+  <string name="app_name">AppSms</string>
+  <string name="action_settings">Settings</string>
+  <string name="btnExportSms">导出短信</string>
+  <string name="btnDisplaySms">显示短信</string>
+</resources>
