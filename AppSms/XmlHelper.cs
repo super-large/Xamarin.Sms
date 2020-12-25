@@ -17,11 +17,19 @@ namespace AppSms
 {
     class XmlHelper
     {
-        internal static byte Serialize(List<SmsInfo> smsItems, string fileName)
+        private string _fileName;
+
+        public XmlHelper(string file)
         {
+            _fileName = file;
+        }
+
+        internal byte Serialize(List<SmsInfo> smsItems,out string msg)
+        {
+            msg = string.Empty;
             byte code = 0;
             var s = Android.Util.Xml.NewSerializer();
-            Java.IO.Writer fos = new Java.IO.FileWriter(fileName);
+            Java.IO.Writer fos = new Java.IO.FileWriter(_fileName);
             string text = string.Empty;
             try
             {
@@ -52,6 +60,7 @@ namespace AppSms
                 }
 
                 code = 0;
+                msg = "导出Xml成功";
 
                 s.EndTag(null, "SmsInfo");
                 s.EndDocument();

@@ -17,6 +17,13 @@ android:orientation="vertical">
 		android:text="@string/btnDisplaySms"
 		android:textSize="20dp"
 		android:padding="10dp"/>
+	<Button
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/btnDisplayContact" 
+		android:text="@string/btnDisplayContact"
+		android:textSize="20dp"
+		android:padding="10dp"/>
 	<ScrollView 
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"

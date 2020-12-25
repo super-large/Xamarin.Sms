@@ -26,7 +26,7 @@ namespace AppSms
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : Activity
     {
-        private const string SMS_URI_ALL = "content://sms/inbox";
+        
         private Uri _smsUri;
         private string[] projection = new string[] { "_id", "address", "person", "body", "date", "type" };
 
@@ -35,10 +35,12 @@ namespace AppSms
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
-            _smsUri = Uri.Parse(SMS_URI_ALL);
+            _smsUri = Uri.Parse(Constants.SMS_URI_ALL);
             try
             {
-                GetPermission(new string[] { Manifest.Permission.ReadContacts, Manifest.Permission.Camera });
+                GetPermission(new string[] {
+                    Manifest.Permission.ReadContacts,
+                    Manifest.Permission.ReadSms });
 
                 //显示短信
                 Button btnDisplay = FindViewById<Button>(Resource.Id.btnDisplaySms);
@@ -47,11 +49,23 @@ namespace AppSms
                 //导出短信
                 Button btExport = FindViewById<Button>(Resource.Id.btnExportSms);
                 btExport.Click += btnExport_Click;
+
+                //显示联系人
+                Button btnDisplayContact = FindViewById<Button>(Resource.Id.btnDisplayContact);
+                btnDisplayContact.Click += BtnDisplayContact_Click;
             }
             catch (System.Exception ex)
             {
                 Log.Info(nameof(MainActivity), "导出短信异常:" + ex.Message);
             }
+        }
+
+        //显示联系人
+        private void BtnDisplayContact_Click(object sender, System.EventArgs e)
+        {
+            var contact = GetContact();
+            TextView tv = FindViewById<TextView>(Resource.Id.tvSms);
+            tv.SetText(contact, TextView.BufferType.Normal);
         }
 
         /// <summary>
@@ -202,19 +216,41 @@ namespace AppSms
             return base.OnKeyDown(keyCode, e);
         }
 
+        /// <summary>
+        /// 获取系统权限
+        /// </summary>
+        /// <param name="permission"></param>
         private void GetPermission(string[] permission)
         {
             if (permission == null || permission.Length == 0)
                 return;
 
-            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadSms) != Permission.Granted)
+            foreach (var item in permission)
             {
-                ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.ReadSms }, 1);
+                if (ContextCompat.CheckSelfPermission(this,item) != Permission.Granted)
+                {
+                    ActivityCompat.RequestPermissions(this, new string[] { item }, 1);
+                }
             }
-            else
+
+            //Toast.MakeText(this, "已获得短信读取权限", ToastLength.Short).Show();
+        }
+
+
+        private string GetContact()
+        {
+            string[] projection = new string[] { "display_name", "sort_key", "contact_id",
+                        "data1"  };
+            StringBuilder contactStr = new StringBuilder();
+            ICursor cur = ContentResolver.Query(ContactsContract.CommonDataKinds.Phone.ContentUri, projection, null, null, null);
+            
+            while (cur.MoveToNext())
             {
-                Toast.MakeText(this, "已获得短信读取权限", ToastLength.Short).Show();
+                string name = cur.GetString(0);
+                string number = cur.GetString(3);
+                contactStr.Append($"姓名:{name},电话号码:{number}\n");
             }
+            return contactStr.ToString();
         }
     }
 }
