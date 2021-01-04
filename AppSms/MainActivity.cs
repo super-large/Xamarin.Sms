@@ -25,208 +25,43 @@ namespace AppSms
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : Activity
-    {
-        
-        private Uri _smsUri;
-        private string[] projection = new string[] { "_id", "address", "person", "body", "date", "type" };
-
+    {            
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
-            _smsUri = Uri.Parse(Constants.SMS_URI_ALL);
+            //联系人
+            Button btnContact = FindViewById<Button>(Resource.Id.btnContact);
+            btnContact.Click += new System.EventHandler((sender,e) => {
+                StartActivity(typeof(ContactActivity));
+            });
+
+            //短信
+            Button btnSms = FindViewById<Button>(Resource.Id.btnSms);
+            btnSms.Click += new System.EventHandler((sender, e) => {
+                StartActivity(typeof(SmsActivity));
+            });
+
+            
             try
             {
                 GetPermission(new string[] {
                     Manifest.Permission.ReadContacts,
                     Manifest.Permission.ReadSms });
-
-                //显示短信
-                Button btnDisplay = FindViewById<Button>(Resource.Id.btnDisplaySms);
-                btnDisplay.Click += BtnDisplay_Click;
-
-                //导出短信
-                Button btExport = FindViewById<Button>(Resource.Id.btnExportSms);
-                btExport.Click += btnExport_Click;
-
-                //显示联系人
-                Button btnDisplayContact = FindViewById<Button>(Resource.Id.btnDisplayContact);
-                btnDisplayContact.Click += BtnDisplayContact_Click;
             }
             catch (System.Exception ex)
             {
                 Log.Info(nameof(MainActivity), "导出短信异常:" + ex.Message);
             }
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.P)
-            {
-                WindowManagerLayoutParams param = Window.Attributes;
-                param.LayoutInDisplayCutoutMode = LayoutInDisplayCutoutMode.Never;
-                Window.Attributes = param;
-
-              
-            }
-
-            makeStatusBarTransparent(this);
-        }
-
-      
-
-        private  void makeStatusBarTransparent(Activity activity)
-        {
-            Window window = activity.Window;
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-            {
-                //清除透明状态栏,使内容不再覆盖状态栏
-                Window.ClearFlags(WindowManagerFlags.TranslucentStatus);
-                Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
-                var clor = Resources.GetColor(Resource.Color.colorPrimary);
-                Window.SetStatusBarColor(clor);
-                //透明导航栏 部分手机导航栏不是虚拟的,比如小米的
-                Window.AddFlags(WindowManagerFlags.TranslucentNavigation);
-                Window.SetNavigationBarColor(clor);
-            }
-
-
-        }
-
-
-        //显示联系人
-        private void BtnDisplayContact_Click(object sender, System.EventArgs e)
-        {
-            var contact = GetContact();
-            TextView tv = FindViewById<TextView>(Resource.Id.tvSms);
-            tv.SetText(contact, TextView.BufferType.Normal);
-        }
-
-        /// <summary>
-        /// 显示
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnDisplay_Click(object sender, System.EventArgs e)
-        {
-            
-            string text = GetSms(200);
-            
-            TextView tv = FindViewById<TextView>(Resource.Id.tvSms);
-            tv.SetText(text, TextView.BufferType.Normal);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
         {
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-
-        private string GetSms(int count)
-        {
-           var cur = ContentResolver.Query(_smsUri, projection, null, null, null);
-            StringBuilder smsBuilder = new StringBuilder();
-            int i = 0;
-            while (cur.MoveToNext())
-            {
-                if (i > count)
-                    break;
-
-                int index_Address = cur.GetColumnIndex("address");
-                int index_Person = cur.GetColumnIndex("person");
-                int index_Body = cur.GetColumnIndex("body");
-                int index_Date = cur.GetColumnIndex("date");
-
-                string strAddress = cur.GetString(index_Address);
-                int intPerson = cur.GetInt(index_Person);
-                string strbody = cur.GetString(index_Body);
-                long longDate = cur.GetLong(index_Date);
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date d = new Date(longDate);
-                string date = format.Format(d);
-
-                smsBuilder.Append("[ ");
-                smsBuilder.Append(strAddress + ", ");
-                smsBuilder.Append(intPerson + ", ");
-                smsBuilder.Append(strbody + ", ");
-                smsBuilder.Append(date);
-                smsBuilder.Append(" ]\n\n");
-                i++;
-            }
-            return smsBuilder.ToString();
-        }
-
-        private void btnExport_Click(object sender, System.EventArgs e)
-        {
-            string path = Path.Combine(GetExternalFilesDir(Environment.DirectoryDcim).AbsolutePath,
-                $"Sms_QQPhoneManager({System.DateTime.Now.ToString("yyyy-HH-dd")}).xml");
-            Java.IO.File fileSms = new Java.IO.File(path);
-            if (fileSms.Exists())
-                fileSms.Delete();
-
-            bool suc = fileSms.CreateNewFile();
-            if (!suc)
-                return;
-            ICursor cur = ContentResolver.Query(_smsUri, projection, null, null, null);
-            SmsOperation smsOpera = new SmsOperation();
-            
-            var task = System.Threading.Tasks.Task.Run(new System.Action(() =>
-            {
-                var smsItems = smsOpera.GetSmsInfo(cur);
-                ExportSms(smsItems, path);
-            }));
-
-             
-
-            //Android.App.AlertDialog.Builder dia = new Android.App.AlertDialog.Builder(this);
-            //dia.SetPositiveButton("OK",
-            //    new System.EventHandler<DialogClickEventArgs>((obj, args) =>
-            //    {
-            //        Toast.MakeText(this, "点击了OK", ToastLength.Short).Show();
-            //    })
-            //);
-
-            //dia.Show();
-        }
-
-        private void ExportSms(List<SmsInfo>items,string path)
-        {
-            XmlHelper xml = new XmlHelper(path);
-            byte code = xml.Serialize(items, out string msg);
-            if(code == 0)
-            {
-                Looper.Prepare();
-                Toast.MakeText(this, $"{path}短信数据导出成功", ToastLength.Long).Show();
-                Looper.Loop();
-            }
-            else
-            {
-                Looper.Prepare();
-                Toast.MakeText(this, $"导出短信数据异常:{msg}", ToastLength.Long).Show();
-                Looper.Loop();
-            }
-        }
-
-        private void ExportSms(Java.IO.File fileSms)
-        {
-            string text = GetSms(10000);
-            byte[] buf = System.Text.Encoding.UTF8.GetBytes(text);
-            try
-            {
-                OutputStream outp = new FileOutputStream(fileSms);
-                outp.Write(buf, 0, buf.Length);
-                outp.Close();
-                outp.Dispose();
-                Looper.Prepare();
-                Toast.MakeText(this, $"{fileSms.AbsoluteFile}短信数据导出成功", ToastLength.Long).Show();
-                Looper.Loop();
-            }
-            catch (System.Exception ex)
-            {
-                Log.Error(nameof(MainActivity), "写入文件异常:" + ex.Message);
-            }
-        }
-
+        
         private long mExitTime;
-
 
         /// <summary>
         /// 双击退出程序
@@ -275,28 +110,6 @@ namespace AppSms
             }
 
             //Toast.MakeText(this, "已获得短信读取权限", ToastLength.Short).Show();
-        }
-
-
-        /// <summary>
-        /// 获取通讯录内容
-        /// </summary>
-        /// <returns></returns>
-        private string GetContact()
-        {
-            string[] projection = new string[] { "display_name", "sort_key", "contact_id",
-                        "data1"  };
-
-            StringBuilder contactStr = new StringBuilder();
-            ICursor cur = ContentResolver.Query(ContactsContract.CommonDataKinds.Phone.ContentUri, projection, null, null, null);
-            
-            while (cur.MoveToNext())
-            {
-                string name = cur.GetString(0);
-                string number = cur.GetString(3);
-                contactStr.Append($"姓名:{name},电话号码:{number}\n");
-            }
-            return contactStr.ToString();
-        }
+        }      
     }
 }
