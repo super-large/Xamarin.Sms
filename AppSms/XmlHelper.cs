@@ -30,7 +30,7 @@ namespace AppSms
             byte code = 0;
             var s = Android.Util.Xml.NewSerializer();
             Java.IO.Writer fos = new Java.IO.FileWriter(_fileName);
-            string text = string.Empty;
+
             try
             {
                 s.SetOutput(fos);
@@ -38,7 +38,6 @@ namespace AppSms
                 s.StartTag(null, "SmsInfo");
                 foreach (var item in smsItems)
                 {
-                    text = item.Body;
                     s.StartTag(null, "Address");    // <person>
                     s.Attribute(null, "Number", item.Address);
 
@@ -71,6 +70,7 @@ namespace AppSms
             catch (System.Exception ex)
             {
                 code = 1;
+                msg = ex.Message + ex.StackTrace.ToString();
             }
             return code;
         }

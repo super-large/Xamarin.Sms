@@ -58,7 +58,40 @@ namespace AppSms
             {
                 Log.Info(nameof(MainActivity), "导出短信异常:" + ex.Message);
             }
+
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.P)
+            {
+                WindowManagerLayoutParams param = Window.Attributes;
+                param.LayoutInDisplayCutoutMode = LayoutInDisplayCutoutMode.Never;
+                Window.Attributes = param;
+
+              
+            }
+
+            makeStatusBarTransparent(this);
         }
+
+      
+
+        private  void makeStatusBarTransparent(Activity activity)
+        {
+            Window window = activity.Window;
+
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            {
+                //清除透明状态栏,使内容不再覆盖状态栏
+                Window.ClearFlags(WindowManagerFlags.TranslucentStatus);
+                Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+                var clor = Resources.GetColor(Resource.Color.colorPrimary);
+                Window.SetStatusBarColor(clor);
+                //透明导航栏 部分手机导航栏不是虚拟的,比如小米的
+                Window.AddFlags(WindowManagerFlags.TranslucentNavigation);
+                Window.SetNavigationBarColor(clor);
+            }
+
+
+        }
+
 
         //显示联系人
         private void BtnDisplayContact_Click(object sender, System.EventArgs e)
@@ -86,8 +119,6 @@ namespace AppSms
         {
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-
-
 
         private string GetSms(int count)
         {
@@ -137,12 +168,8 @@ namespace AppSms
             ICursor cur = ContentResolver.Query(_smsUri, projection, null, null, null);
             SmsOperation smsOpera = new SmsOperation();
             
-
-            //XmlHelper.Serialize(smsItems, fileSms.AbsolutePath);
-
             var task = System.Threading.Tasks.Task.Run(new System.Action(() =>
             {
-                //ExportSms(fileSms);
                 var smsItems = smsOpera.GetSmsInfo(cur);
                 ExportSms(smsItems, path);
             }));
@@ -162,11 +189,18 @@ namespace AppSms
 
         private void ExportSms(List<SmsInfo>items,string path)
         {
-           byte code =  XmlHelper.Serialize(items, path);
+            XmlHelper xml = new XmlHelper(path);
+            byte code = xml.Serialize(items, out string msg);
             if(code == 0)
             {
                 Looper.Prepare();
                 Toast.MakeText(this, $"{path}短信数据导出成功", ToastLength.Long).Show();
+                Looper.Loop();
+            }
+            else
+            {
+                Looper.Prepare();
+                Toast.MakeText(this, $"导出短信数据异常:{msg}", ToastLength.Long).Show();
                 Looper.Loop();
             }
         }
@@ -193,6 +227,13 @@ namespace AppSms
 
         private long mExitTime;
 
+
+        /// <summary>
+        /// 双击退出程序
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
         public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
         {
             //判断用户是否点击了“返回键”
@@ -237,10 +278,15 @@ namespace AppSms
         }
 
 
+        /// <summary>
+        /// 获取通讯录内容
+        /// </summary>
+        /// <returns></returns>
         private string GetContact()
         {
             string[] projection = new string[] { "display_name", "sort_key", "contact_id",
                         "data1"  };
+
             StringBuilder contactStr = new StringBuilder();
             ICursor cur = ContentResolver.Query(ContactsContract.CommonDataKinds.Phone.ContentUri, projection, null, null, null);
             
