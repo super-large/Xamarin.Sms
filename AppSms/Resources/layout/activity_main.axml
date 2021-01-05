@@ -11,9 +11,9 @@ android:orientation="vertical" android:fitsSystemWindows="true">
 		android:textSize="20dp"
 	android:layout_margin="0dp"/>
 	<Button
+		android:id="@+id/btnContact" 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/btnContact" 
 		android:text="@string/btnContact"
 		android:textSize="20dp"
 		android:padding="10dp"/>

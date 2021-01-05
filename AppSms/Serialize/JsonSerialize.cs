@@ -15,9 +15,20 @@ namespace AppSms.Json
 {
     public class JsonSerialize
     {
-        public string Serialize(object value)
+        public string Serialize(object value,out string msg)
         {
-            return JsonConvert.SerializeObject(value);
+            string text = string.Empty;
+            msg = string.Empty;
+            try
+            {
+                text = JsonConvert.SerializeObject(value, Formatting.Indented);
+            }
+            catch (Exception ex)
+            {
+                text = string.Empty;
+                msg = ex.Message;
+            }
+            return text;
         }
     }
 }

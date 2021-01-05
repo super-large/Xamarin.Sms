@@ -20,6 +20,7 @@ namespace AppSms
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            SetContentView(Resource.Layout.activity_contact);
 
             // Create your application here
 

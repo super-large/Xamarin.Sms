@@ -17,11 +17,14 @@ namespace AppSms
 {
     class SmsOperation
     {
-        public List<SmsInfo> GetSmsInfo(ICursor cur)
+        public List<SmsInfo> GetSmsInfo(ICursor cur,int count)
         {
             List<SmsInfo> smsItems = new List<SmsInfo>();
             while (cur.MoveToNext())
             {
+                if (cur.Count == count)
+                    break;
+
                 int index_Address = cur.GetColumnIndex("address");
                 int index_Person = cur.GetColumnIndex("person");
                 int index_Body = cur.GetColumnIndex("body");

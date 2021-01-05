@@ -30,6 +30,7 @@ namespace AppSms
         {
             base.OnCreate(savedInstanceState);
 
+            SetContentView(Resource.Layout.activity_sms);
             //显示短信
             Button btnDisplay = FindViewById<Button>(Resource.Id.btnDisplaySms);
             btnDisplay.Click += BtnDisplay_Click;
@@ -46,24 +47,32 @@ namespace AppSms
             if (radioGrp == null)
                 return;
 
+            string path = Path.Combine(GetExternalFilesDir(Environment.DirectoryDcim).AbsolutePath,
+                $"Sms_QQPhoneManager({System.DateTime.Now.ToLongDateString()})");
+            
             IExport ex = null;
             switch (radioGrp.CheckedRadioButtonId)
             {
                 case Resource.Id.rdoJson:
                     ex = new JsonExport();
+                    path = string.Concat(path, ".json");
                     break;
                 case Resource.Id.rdoText:
                     ex = new TextExport();
+                    path = string.Concat(path, ".txt");
                     break;
                 case Resource.Id.rdoXml:
                     ex = new XmlExport();
+                    path = string.Concat(path, ".xml");
                     break;
-                default:
-                    return;
             }
 
-            string path = Path.Combine(GetExternalFilesDir(Environment.DirectoryDcim).AbsolutePath,
-                $"Sms_QQPhoneManager({System.DateTime.Now.ToString("yyyy-HH-dd")}).xml");
+            if (ex == null)
+            {
+                Toast.MakeText(this, $"请选择导出短信文本类型", ToastLength.Long).Show();
+                return;
+            }
+
             Java.IO.File fileSms = new Java.IO.File(path);
             if (fileSms.Exists())
                 fileSms.Delete();
@@ -71,13 +80,19 @@ namespace AppSms
             bool suc = fileSms.CreateNewFile();
             if (!suc)
                 return;
+
             ICursor cur = ContentResolver.Query(_smsUri, projection, null, null, null);
-            SmsOperation smsOpera = new SmsOperation();
+          
 
             var task = Task.Run(new System.Action(() =>
             {
-                var smsItems = smsOpera.GetSmsInfo(cur);
-                ExportSms(smsItems, path);
+                Looper.Prepare();
+                byte code = ex.ExportData(path, cur, out string msg);
+                if (code == 0)
+                    Toast.MakeText(this, $"导出短信导出成功:{path}", ToastLength.Long).Show();
+                else
+                    Toast.MakeText(this, $"导出短信导出异常:{msg}", ToastLength.Long).Show();
+                Looper.Loop();
             }));
         }
 
@@ -90,12 +105,11 @@ namespace AppSms
 
         private string GetSms(int count)
         {
-            var cur = ContentResolver.Query(_smsUri, projection, null, null, null);
+            var cur = ContentResolver.Query(_smsUri, new string[] {"* from sms" }, null, null, null);
             StringBuilder smsBuilder = new StringBuilder();
-            int i = 0;
             while (cur.MoveToNext())
             {
-                if (i > count)
+                if (cur.Count == count)
                     break;
 
                 int index_Address = cur.GetColumnIndex("address");
@@ -117,45 +131,8 @@ namespace AppSms
                 smsBuilder.Append(strbody + ", ");
                 smsBuilder.Append(date);
                 smsBuilder.Append(" ]\n\n");
-                i++;
             }
             return smsBuilder.ToString();
-        }
-
-        private void ExportSms(List<SmsInfo> items, string path)
-        {
-            XmlSerialize xml = new XmlSerialize(path);
-            byte code = xml.Serialize(items, out string msg);
-            Looper.Prepare();
-            if (code == 0)
-            {
-                Toast.MakeText(this, $"{path}短信数据导出成功", ToastLength.Long).Show();
-            }
-            else
-            {
-                Toast.MakeText(this, $"导出短信数据异常:{msg}", ToastLength.Long).Show();
-            }
-            Looper.Loop();
-        }
-
-        private void ExportSms(Java.IO.File fileSms)
-        {
-            string text = GetSms(10000);
-            byte[] buf = System.Text.Encoding.UTF8.GetBytes(text);
-            try
-            {
-                OutputStream outp = new FileOutputStream(fileSms);
-                outp.Write(buf, 0, buf.Length);
-                outp.Close();
-                outp.Dispose();
-                Looper.Prepare();
-                Toast.MakeText(this, $"{fileSms.AbsoluteFile}短信数据导出成功", ToastLength.Long).Show();
-                Looper.Loop();
-            }
-            catch (System.Exception ex)
-            {
-                Log.Error(nameof(SmsActivity), "写入文件异常:" + ex.Message);
-            }
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Database;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
@@ -14,6 +15,6 @@ namespace AppSms.Export
 {
     interface IExport
     {
-        byte ExportData(string filePath);
+        byte ExportData(string filePath, ICursor cur, out string mesg);
     }
 }

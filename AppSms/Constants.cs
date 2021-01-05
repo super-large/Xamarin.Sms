@@ -17,7 +17,7 @@ namespace AppSms
         /// <summary>
         /// 短信收件箱
         /// </summary>
-        public const string SMS_URI_ALL = "content://sms/inbox";
+        public const string SMS_URI_ALL = "content://sms/";
 
         /// <summary>
         /// 联系人

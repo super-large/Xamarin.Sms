@@ -5,6 +5,7 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Database;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
@@ -14,9 +15,14 @@ namespace AppSms.Export
 {
     class XmlExport : IExport
     {
-        public byte ExportData(string filePath)
+        public byte ExportData(string filePath, ICursor cur,out string mesg)
         {
-            throw new NotImplementedException();
+            SmsOperation smsOpera = new SmsOperation();
+            var smsItems = smsOpera.GetSmsInfo(cur, int.MaxValue);
+            XmlSerialize xml = new XmlSerialize(filePath);
+            byte code = xml.Serialize(smsItems, out string msg);
+            mesg = msg;
+            return code;
         }
     }
 }
