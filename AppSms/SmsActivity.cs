@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Database;
@@ -13,6 +12,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AppSms.Export;
 using Java.IO;
 using Java.Lang;
 using Java.Text;
@@ -23,16 +23,12 @@ namespace AppSms
     [Activity(Label = "SmsActivity")]
     public class SmsActivity : Activity
     {
-        private Uri _smsUri;
+        private Uri _smsUri = Uri.Parse(Constants.SMS_URI_ALL);
         private string[] projection = new string[] { "_id", "address", "person", "body", "date", "type" };
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            // Create your application here
-
-            _smsUri = Uri.Parse(Constants.SMS_URI_ALL);
 
             //显示短信
             Button btnDisplay = FindViewById<Button>(Resource.Id.btnDisplaySms);
@@ -46,6 +42,26 @@ namespace AppSms
 
         private void BtnExport_Click(object sender, System.EventArgs e)
         {
+            RadioGroup radioGrp = FindViewById<RadioGroup>(Resource.Id.rdoGroupSms);
+            if (radioGrp == null)
+                return;
+
+            IExport ex = null;
+            switch (radioGrp.CheckedRadioButtonId)
+            {
+                case Resource.Id.rdoJson:
+                    ex = new JsonExport();
+                    break;
+                case Resource.Id.rdoText:
+                    ex = new TextExport();
+                    break;
+                case Resource.Id.rdoXml:
+                    ex = new XmlExport();
+                    break;
+                default:
+                    return;
+            }
+
             string path = Path.Combine(GetExternalFilesDir(Environment.DirectoryDcim).AbsolutePath,
                 $"Sms_QQPhoneManager({System.DateTime.Now.ToString("yyyy-HH-dd")}).xml");
             Java.IO.File fileSms = new Java.IO.File(path);
@@ -58,7 +74,7 @@ namespace AppSms
             ICursor cur = ContentResolver.Query(_smsUri, projection, null, null, null);
             SmsOperation smsOpera = new SmsOperation();
 
-            var task = System.Threading.Tasks.Task.Run(new System.Action(() =>
+            var task = Task.Run(new System.Action(() =>
             {
                 var smsItems = smsOpera.GetSmsInfo(cur);
                 ExportSms(smsItems, path);
@@ -108,20 +124,18 @@ namespace AppSms
 
         private void ExportSms(List<SmsInfo> items, string path)
         {
-            XmlHelper xml = new XmlHelper(path);
+            XmlSerialize xml = new XmlSerialize(path);
             byte code = xml.Serialize(items, out string msg);
+            Looper.Prepare();
             if (code == 0)
             {
-                Looper.Prepare();
                 Toast.MakeText(this, $"{path}短信数据导出成功", ToastLength.Long).Show();
-                Looper.Loop();
             }
             else
             {
-                Looper.Prepare();
                 Toast.MakeText(this, $"导出短信数据异常:{msg}", ToastLength.Long).Show();
-                Looper.Loop();
             }
+            Looper.Loop();
         }
 
         private void ExportSms(Java.IO.File fileSms)
@@ -140,9 +154,8 @@ namespace AppSms
             }
             catch (System.Exception ex)
             {
-                Log.Error(nameof(MainActivity), "写入文件异常:" + ex.Message);
+                Log.Error(nameof(SmsActivity), "写入文件异常:" + ex.Message);
             }
         }
     }
-
 }

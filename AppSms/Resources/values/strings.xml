@@ -1,7 +1,13 @@
 <resources>
   <string name="app_name">AndroidApp</string>
+  
   <string name="btnSms">短信</string>
   <string name="btnContact">联系人</string>
   <string name="btnDisplaySms">显示短信</string>
   <string name="btnExportSms">导出短信</string>
+
+  <string name="rdoHello">选择导出文件格式</string>
+  <string name="rdoJson">Json格式</string>
+  <string name="rdoXml">Xml格式</string>
+  <string name="rdoText">Text格式</string>
 </resources>

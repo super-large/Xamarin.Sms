@@ -24,8 +24,7 @@ android:orientation="vertical" android:fitsSystemWindows="true">
 		<TextView
 			android:id="@+id/tvSms"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-		android:text="短信内容"/>
+            android:layout_height="wrap_content"/>
 	</LinearLayout>
 </LinearLayout>
 

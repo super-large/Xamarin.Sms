@@ -3,7 +3,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
 	<Button
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
@@ -11,11 +10,36 @@
 		android:text="@string/btnDisplaySms"
 		android:textSize="20dp"
 		android:padding="10dp"/>
-		<Button
-		android:layout_width="fill_parent"
+	<Button
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:id="@+id/btnExportSms" 
+	android:text="@string/btnExportSms"
+	android:textSize="20dp"
+	android:padding="10dp"/>
+	<TextView
+	android:id="@+id/rdoHello"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:text="@string/rdoHello" />
+	<RadioGroup
+	android:id="@+id/rdoGroupSms"
+	android:layout_width="wrap_content"
+	android:layout_height="fill_parent"
+	android:layout_x="3px"
+	android:orientation="vertical">
+		<RadioButton android:id="@+id/rdoJson"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:id="@+id/btnExportSms" 
-		android:text="@string/btnExportSms"
-		android:textSize="20dp"
-		android:padding="10dp"/>
+		android:text="@string/rdoJson"/>
+		<RadioButton android:id="@+id/rdoXml"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/rdoXml"/>
+		<RadioButton android:id="@+id/rdoText"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/rdoText"/>
+	</RadioGroup>
+	
 </LinearLayout>
