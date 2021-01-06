@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Android.App;
@@ -12,6 +11,8 @@ using Android.Widget;
 using Java.Lang;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using AppSms;
+using System.Collections.Generic;
 
 
 namespace AppSms
@@ -30,7 +31,7 @@ namespace AppSms
             msg = string.Empty;
             byte code = 0;
             var s = Android.Util.Xml.NewSerializer();
-            
+
             Java.IO.Writer fos = new Java.IO.FileWriter(_fileName);
 
             try
@@ -76,6 +77,7 @@ namespace AppSms
             }
             return code;
         }
+
 
         private string RemoveSpecialCharacter(string hexData)
         {

@@ -25,7 +25,7 @@ namespace AppSms
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : Activity
-    {            
+    {
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -33,19 +33,21 @@ namespace AppSms
 
             //联系人
             Button btnContact = FindViewById<Button>(Resource.Id.btnContact);
-            btnContact.Click += new System.EventHandler((sender,e) => {
+            btnContact.Click += new System.EventHandler((sender, e) =>
+            {
                 StartActivity(typeof(ContactActivity));
             });
 
             //短信
             Button btnSms = FindViewById<Button>(Resource.Id.btnSms);
-            btnSms.Click += new System.EventHandler((sender, e) => {
+            btnSms.Click += new System.EventHandler((sender, e) =>
+            {
                 StartActivity(typeof(SmsActivity));
             });
 
-            
             try
             {
+                //获取系统权限
                 GetPermission(new string[] {
                     Manifest.Permission.ReadContacts,
                     Manifest.Permission.ReadSms });
@@ -60,7 +62,7 @@ namespace AppSms
         {
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        
+
         private long mExitTime;
 
         /// <summary>
@@ -72,13 +74,13 @@ namespace AppSms
         public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
         {
             //判断用户是否点击了“返回键”
-            if (keyCode ==  Keycode.Back)
+            if (keyCode == Keycode.Back)
             {
                 //与上次点击返回键时刻作差
                 if ((JavaSystem.CurrentTimeMillis() - mExitTime) > 2000)
                 {
                     //大于2000ms则认为是误操作，使用Toast进行提示
-                    Toast.MakeText(this, "再按一次退出程序",  ToastLength.Short).Show();
+                    Toast.MakeText(this, "再按一次退出程序", ToastLength.Short).Show();
                     //并记录下本次点击“返回键”的时刻，以便下次进行判断
                     mExitTime = JavaSystem.CurrentTimeMillis();
                 }
@@ -103,13 +105,15 @@ namespace AppSms
 
             foreach (var item in permission)
             {
-                if (ContextCompat.CheckSelfPermission(this,item) != Permission.Granted)
+                if (ContextCompat.CheckSelfPermission(this, item) != Permission.Granted)
                 {
                     ActivityCompat.RequestPermissions(this, new string[] { item }, 1);
                 }
+                else
+                {
+                    Toast.MakeText(this, $"已获得{item}权限", ToastLength.Short).Show();
+                }
             }
-
-            //Toast.MakeText(this, "已获得短信读取权限", ToastLength.Short).Show();
-        }      
+        }
     }
 }

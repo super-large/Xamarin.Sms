@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">AndroidApp</string>
+  <string name="app_name">SmsApp</string>
   
   <string name="btnSms">短信</string>
   <string name="btnContact">联系人</string>

@@ -98,41 +98,9 @@ namespace AppSms
 
         private void BtnDisplay_Click(object sender, System.EventArgs e)
         {
-            string text = GetSms(200);
-            TextView tv = FindViewById<TextView>(Resource.Id.tvSms);
-            tv.SetText(text, TextView.BufferType.Normal);
-        }
-
-        private string GetSms(int count)
-        {
-            var cur = ContentResolver.Query(_smsUri, new string[] {"* from sms" }, null, null, null);
-            StringBuilder smsBuilder = new StringBuilder();
-            while (cur.MoveToNext())
-            {
-                if (cur.Count == count)
-                    break;
-
-                int index_Address = cur.GetColumnIndex("address");
-                int index_Person = cur.GetColumnIndex("person");
-                int index_Body = cur.GetColumnIndex("body");
-                int index_Date = cur.GetColumnIndex("date");
-
-                string strAddress = cur.GetString(index_Address);
-                int intPerson = cur.GetInt(index_Person);
-                string strbody = cur.GetString(index_Body);
-                long longDate = cur.GetLong(index_Date);
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date d = new Date(longDate);
-                string date = format.Format(d);
-
-                smsBuilder.Append("[ ");
-                smsBuilder.Append(strAddress + ", ");
-                smsBuilder.Append(intPerson + ", ");
-                smsBuilder.Append(strbody + ", ");
-                smsBuilder.Append(date);
-                smsBuilder.Append(" ]\n\n");
-            }
-            return smsBuilder.ToString();
+            //string text = GetSms(200);
+            //TextView tv = FindViewById<TextView>(Resource.Id.tvSms);
+            //tv.SetText(text, TextView.BufferType.Normal);
         }
     }
 }

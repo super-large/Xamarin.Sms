@@ -17,21 +17,15 @@ namespace AppSms
     [Activity(Label = "ContentActivity")]
     public class ContactActivity : Activity
     {
+        private string[] projection = new string[] { "display_name", "sort_key", "contact_id",
+                        "data1"  };
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_contact);
 
-            // Create your application here
-
-            Button btnDisplay = FindViewById<Button>(Resource.Id.btnContact);
-            btnDisplay.Click += BtnDisplay_Click;
-        }
-
-        private void BtnDisplay_Click(object sender, EventArgs e)
-        {
             var contact = GetContact();
-            TextView tv = FindViewById<TextView>(Resource.Id.tvSms);
+            TextView tv = FindViewById<TextView>(Resource.Id.tvContact);
             tv.SetText(contact, TextView.BufferType.Normal);
         }
 
@@ -41,9 +35,6 @@ namespace AppSms
         /// <returns></returns>
         private string GetContact()
         {
-            string[] projection = new string[] { "display_name", "sort_key", "contact_id",
-                        "data1"  };
-
             StringBuilder contactStr = new StringBuilder();
             ICursor cur = ContentResolver.Query(ContactsContract.CommonDataKinds.Phone.ContentUri, projection, null, null, null);
 
