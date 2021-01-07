@@ -25,26 +25,27 @@ namespace AppSms
             SetContentView(Resource.Layout.activity_contact);
 
             var contact = GetContact();
-            TextView tv = FindViewById<TextView>(Resource.Id.tvContact);
-            tv.SetText(contact, TextView.BufferType.Normal);
+            ListView lv = FindViewById<ListView>(Resource.Id.lvContact);
+
+            IListAdapter contactAdapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleListItem1, contact);
+            lv.Adapter = contactAdapter;
         }
 
         /// <summary>
         /// 获取通讯录内容
         /// </summary>
         /// <returns></returns>
-        private string GetContact()
+        private List<string> GetContact()
         {
-            StringBuilder contactStr = new StringBuilder();
             ICursor cur = ContentResolver.Query(ContactsContract.CommonDataKinds.Phone.ContentUri, projection, null, null, null);
-
+            List<string> items = new List<string>();
             while (cur.MoveToNext())
             {
                 string name = cur.GetString(0);
                 string number = cur.GetString(3);
-                contactStr.Append($"姓名:{name},电话号码:{number}\n");
+                items.Add(name +"\r\n"+ number);
             }
-            return contactStr.ToString();
+            return items;
         }
     }
 }

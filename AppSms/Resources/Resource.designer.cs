@@ -8549,6 +8549,9 @@ namespace AppSms
 			// aapt resource value: 0x7f0b0070
 			public const int list_item = 2131427440;
 			
+			// aapt resource value: 0x7f0b009d
+			public const int lvContact = 2131427485;
+			
 			// aapt resource value: 0x7f0b00d1
 			public const int main_appbar = 2131427537;
 			
@@ -8860,9 +8863,6 @@ namespace AppSms
 			
 			// aapt resource value: 0x7f0b0013
 			public const int transition_transform = 2131427347;
-			
-			// aapt resource value: 0x7f0b009d
-			public const int tvContact = 2131427485;
 			
 			// aapt resource value: 0x7f0b0034
 			public const int uniform = 2131427380;
