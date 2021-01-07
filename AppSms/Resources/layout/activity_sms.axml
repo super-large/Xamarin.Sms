@@ -21,7 +21,7 @@
 	android:id="@+id/rdoHello"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:text="@string/rdoHello" />
+	android:text="@string/rdoSelect" />
 	<RadioGroup
 	android:id="@+id/rdoGroupSms"
 	android:layout_width="wrap_content"
@@ -40,6 +40,14 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/rdoText"/>
+		<RadioButton android:id="@+id/rdoExcel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/rdoExcel"/>
+		<RadioButton android:id="@+id/rdoCsv"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/rdoCsv"/>
 	</RadioGroup>
 	
 </LinearLayout>

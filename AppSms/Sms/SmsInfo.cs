@@ -15,7 +15,7 @@ namespace AppSms
     /// <summary>
     /// 短信内容
     /// </summary>
-    class SmsInfo:Java.Lang.Object
+    class SmsInfo
     {
         /// <summary>
         /// 号码
