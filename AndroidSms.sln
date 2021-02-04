@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.960
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSms", "AppSms\AppSms.csproj", "{7DCB854C-B9A1-48D8-840D-C8D33517DC1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xml-1.0", "xml-1.0\xml-1.0.csproj", "{D8B1F8C5-78DF-46FA-B488-A0E309BE2D44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{7DCB854C-B9A1-48D8-840D-C8D33517DC1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DCB854C-B9A1-48D8-840D-C8D33517DC1F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7DCB854C-B9A1-48D8-840D-C8D33517DC1F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D8B1F8C5-78DF-46FA-B488-A0E309BE2D44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8B1F8C5-78DF-46FA-B488-A0E309BE2D44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8B1F8C5-78DF-46FA-B488-A0E309BE2D44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8B1F8C5-78DF-46FA-B488-A0E309BE2D44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

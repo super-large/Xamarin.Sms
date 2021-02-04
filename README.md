@@ -1,2 +1,2 @@
 # AppSms
-Xamarin with C# sms export format<xml、text、json、excelcsv> to sdcard storage
+Xamarin with C# sms export format<xml、text、json、excel、csv> to sdcard storage

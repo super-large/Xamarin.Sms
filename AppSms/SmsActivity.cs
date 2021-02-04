@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,6 +42,10 @@ namespace AppSms
 
         private void BtnExport_Click(object sender, System.EventArgs e)
         {
+            //Org.Xml.Opera.XmlOperation xml = new Org.Xml.Opera.XmlOperation();
+            //string name = xml.Name;
+            //System.Console.WriteLine(name);
+
             RadioGroup radioGrp = FindViewById<RadioGroup>(Resource.Id.rdoGroupSms);
             if (radioGrp == null)
                 return;
