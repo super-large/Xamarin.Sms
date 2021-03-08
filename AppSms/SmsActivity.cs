@@ -16,6 +16,7 @@ using Java.IO;
 using Java.Lang;
 using Java.Text;
 using Java.Util;
+using Org.Xml.Opera;
 
 namespace AppSms
 {
@@ -42,9 +43,8 @@ namespace AppSms
 
         private void BtnExport_Click(object sender, System.EventArgs e)
         {
-            //Org.Xml.Opera.XmlOperation xml = new Org.Xml.Opera.XmlOperation();
-            //string name = xml.Name;
-            //System.Console.WriteLine(name);
+            XmlOperation opera = new XmlOperation();
+            string name = opera.Name;
 
             RadioGroup radioGrp = FindViewById<RadioGroup>(Resource.Id.rdoGroupSms);
             if (radioGrp == null)
